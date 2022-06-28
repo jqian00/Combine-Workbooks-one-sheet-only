@@ -1,0 +1,33 @@
+Option Explicit
+Sub CombineWB()
+
+Application.ScreenUpdating = False
+Dim arr, brr, crr
+Dim cb, wb As Workbook
+Dim i As Integer
+Dim rc As Integer
+arr = Application.GetOpenFilename(MultiSelect:=True)
+Set cb = Workbooks.Add
+
+With cb
+    If IsArray(arr) = True Then
+        
+        crr = Workbooks.Open(arr(1)).Sheets(1).Range("A1:A" & Cells(1, Columns.Count).End(xlToLeft).Column)
+        For i = 1 To UBound(arr)
+            Set wb = Workbooks.Open(arr(i))
+            rc = wb.Worksheets(1).Cells(1, Columns.Count).End(xlToLeft).Column  'get last column
+            crr = wb.Worksheets(1).Range("A1").EntireRow.Value                          'get first row
+            brr = wb.Worksheets(1).Range("A2:rc" & wb.Sheets(1).Range("A65536").End(xlUp).Row)
+            cb.Worksheets(1).Range("A1").Resize(UBound(crr), UBound(brr, 2)) = crr
+            cb.Worksheets(1).Range("A" & cb.Worksheets(1).Range("A65536").End(xlUp).Row + 1).Resize(UBound(brr), UBound(brr, 2)) = brr
+            wb.Close False
+        Next
+        
+             
+    End If
+End With
+
+Application.ScreenUpdating = True
+
+End Sub
+
